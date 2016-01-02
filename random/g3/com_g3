@@ -1,0 +1,39 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `com_g3`()
+BEGIN
+
+DECLARE vLink INTEGER DEFAULT 5;
+DECLARE vCom varchar(255) DEFAULT "";
+DECLARE vCal INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE cCom CURSOR FOR select DISTINCT Nombre, Servicio_Establecimiento, Calificacion, Comentario from grupo3;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cCom;
+agregar_es: LOOP
+ FETCH cCom INTO vNombre, vServicio, vCal, Vcom;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET vLink = (SELECT id_establecimiento_servicio from establecimiento_servicio 
+where id_establecimiento IN(
+SELECT id_establecimiento from establecimiento where nombre = vNombre)
+and id_servicio IN(SELECT id_servicio from servicio where nombre = vServicio)limit 1);
+
+  -- SELECT vLink;
+  
+  
+  INSERT INTO comentario (contenido, calificacion, id_establecimiento_servicio ) VALUES (vCom, vCal, vLink);  
+ 
+END LOOP agregar_es;
+
+END

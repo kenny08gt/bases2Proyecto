@@ -1,0 +1,31 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `dim_g1`()
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vValor varchar(255) DEFAULT "";
+DECLARE cDim1 CURSOR FOR SELECT distinct Nombre5 from grupo1 where Nombre5!=' ';
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cDim1;
+agregar_es: LOOP
+ FETCH cDim1 INTO vValor;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET repetido = ( select count(nombre) from dimension where nombre=vValor);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO dimension (nombre) VALUES (vValor);  
+ 
+ END IF;
+  
+END LOOP agregar_es;
+END

@@ -1,0 +1,11 @@
+CREATE TABLE grupo3(
+  ID_Establecimiento int,
+  Nombre VARCHAR(255),
+  Coordenadas VARCHAR(255),
+  Tipo_establecimiento VARCHAR(255),
+  Es_oficial VARCHAR(255),
+  Servicio_Establecimiento VARCHAR(255),
+  Descripcion VARCHAR(255),
+  Calificacion INT,
+  Comentario VARCHAR(255)
+);

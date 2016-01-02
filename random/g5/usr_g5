@@ -1,0 +1,61 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_g5`()
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE existe integer default 0;
+DEClARE rid integer default 0;
+DECLARE vId integer DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vFecha date ;
+DECLARE vTel integer DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEmail varchar(255) DEFAULT "";
+DECLARE vPass varchar(255) DEFAULT "";
+DECLARE vTipo integer default 0;
+DECLARE vTipov varchar(255) default "";
+DECLARE cUsr5 CURSOR FOR select distinct Usuario_id, Usuario_nombre, Usuario_fechaNacimiento, Usuario_telefono, 
+Usuario_correo, Usuario_password, Usuario_idTipoUsuario from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cUsr5;
+agregar_es: LOOP
+ FETCH cUsr5 INTO vId, vNombre, vFecha, vTel, vEmail, vPass,vTipo;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+  SET repetido = ( select count(nombre) from establecimiento where nombre=vNombre);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ IF vTipo = 1 then
+   SET vTipov = 'normal';
+ END IF;
+ IF vTipo = 2 then
+ set vTipov = 'especial';
+ END IF;
+
+ IF vTipo = 3 then
+ SET vTipov = 'administrador';
+END IF;
+
+ set existe = ( select distinct count(Establecimiento_id) from  grupo5 where Atributo_nombre='Oficial' and Valor_valor = vId);
+
+ if existe > 0 then
+ set rid = (select distinct Establecimiento_id from  grupo5 where Atributo_nombre='Oficial' and Valor_valor = vId);
+ end if;
+
+ IF rid = 0 then
+  INSERT INTO usuario (nombre, telefono, correo, rol, password) VALUES (vNombre,vTel,vEmail,vTipov, vPass); 
+end if;
+if rid > 0 then
+  INSERT INTO usuario (nombre, telefono, correo, rol, id_establecimiento, password) VALUES (vNombre,vTel,vEmail,vTipov, rid ,vPass); 
+end if;
+END IF;
+  
+END LOOP agregar_es;
+END

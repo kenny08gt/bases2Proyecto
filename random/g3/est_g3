@@ -1,0 +1,49 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `est_g3`()
+BEGIN
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+Declare vLat float DEFAULT 0;
+Declare vLong float DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vEs_oficial varchar(255) DEFAULT "";
+DECLARE vTipo varchar(255) DEFAULT "";
+DECLARE cEst CURSOR FOR SELECT DISTINCT Nombre, Es_oficial, Tipo_establecimiento FROM grupo3;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEst;
+get_email: LOOP
+ FETCH cEst INTO vNombre, vEs_oficial, vTipo;
+ IF finished = 1 THEN 
+ LEAVE get_email;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ Select totalCount = count(*) From establecimiento where nombre=vNombre;
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  IF vEs_oficial = 'Si' THEN
+  SET Off = 1;
+  END IF;
+
+ INSERT INTO establecimiento (Nombre, Oficial, tipo) VALUES (vNombre, Off, vTipo);  
+ END IF;
+
+
+END LOOP get_email;
+/*CREATE TEMPORARY TABLE TmpEst (Nombre Varchar(255), Coord varchar(255), Oficial varchar(255)); 
+INSERT INTO TmpEst SELECT DISTINCT Nombre, Coordenadas, Es_oficial FROM grupo3;
+
+
+DROP TABLE TmpEst;*/
+
+END

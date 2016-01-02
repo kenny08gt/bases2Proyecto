@@ -1,0 +1,31 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `cat_g1`()
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vValor varchar(255) DEFAULT "";
+DECLARE cCat1 CURSOR FOR select distinct valor1 from grupo1 where valor1 != ' ';
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cCat1;
+agregar_es: LOOP
+ FETCH cCat1 INTO vValor;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET repetido = ( select count(nombre) from categoria where nombre=vValor);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO categoria (nombre) VALUES (vValor);  
+ 
+ END IF;
+  
+END LOOP agregar_es;
+END

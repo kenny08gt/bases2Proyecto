@@ -1,0 +1,32 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `es_g1`()
+BEGIN
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEst INTEGER DEFAULT 0;
+DECLARE vSer INTEGER DEFAULT 0;
+DECLARE vEstv varchar(255) DEFAULT "";
+DECLARE vServ varchar(255) DEFAULT "";
+DECLARE cEs1 CURSOR FOR select Nombre1, Nombre2 from grupo1 where Nombre1!= ' 'and Nombre2 != ' ' group by Nombre1;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEs1;
+agregar_es: LOOP
+ FETCH cEs1 INTO vEstv, vServ;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+ set vEst = (select id_establecimiento from establecimiento where nombre= vEstv LIMIT 1);
+ set vSer = (select id_servicio from servicio where nombre= vServ LIMIT 1);
+  INSERT INTO establecimiento_servicio (id_establecimiento, id_servicio) VALUES (vEst, vSer);  
+
+ 
+END LOOP agregar_es;
+END

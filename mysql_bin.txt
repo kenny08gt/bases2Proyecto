@@ -1,0 +1,1181 @@
+/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;
+/*!40019 SET @@session.max_insert_delayed_threads=0*/;
+/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+DELIMITER /*!*/;
+# at 4
+#151113 17:48:59 server id 1  end_log_pos 107 	Start: binlog v 4, server v 5.5.43-0ubuntu0.14.04.1-log created 151113 17:48:59 at startup
+# Warning: this binlog is either in use or was not closed properly.
+ROLLBACK/*!*/;
+BINLOG '
+iyJGVg8BAAAAZwAAAGsAAAABAAQANS41LjQzLTB1YnVudHUwLjE0LjA0LjEtbG9nAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAACLIkZWEzgNAAgAEgAEBAQEEgAAVAAEGggAAAAICAgCAA==
+'/*!*/;
+# at 107
+#151113 17:49:02 server id 1  end_log_pos 1096 	Query	thread_id=39	exec_time=0	error_code=0
+use `bases2`/*!*/;
+SET TIMESTAMP=1447436942/*!*/;
+SET @@session.pseudo_thread_id=39/*!*/;
+SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+SET @@session.sql_mode=0/*!*/;
+SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
+/*!\C utf8 *//*!*/;
+SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=8/*!*/;
+SET @@session.lc_time_names=0/*!*/;
+SET @@session.collation_database=DEFAULT/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `es_g1`()
+    NO SQL
+BEGIN
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEst INTEGER DEFAULT 0;
+DECLARE vSer INTEGER DEFAULT 0;
+DECLARE vEstv varchar(255) DEFAULT "";
+DECLARE vServ varchar(255) DEFAULT "";
+DECLARE cEs1 CURSOR FOR select Nombre1, Nombre2 from grupo1 where Nombre1!= ' 'and Nombre2 != ' ' group by Nombre1;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEs1;
+agregar_es: LOOP
+ FETCH cEs1 INTO vEstv, vServ;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+ set vEst = (select id_establecimiento from establecimiento where nombre= vEstv LIMIT 1);
+ set vSer = (select id_servicio from servicio where nombre= vServ LIMIT 1);
+  INSERT INTO establecimiento_servicio (id_establecimiento, id_servicio) VALUES (vEst, vSer);  
+
+ 
+END LOOP agregar_es;
+END
+/*!*/;
+# at 1096
+#151113 17:49:30 server id 1  end_log_pos 2248 	Query	thread_id=46	exec_time=0	error_code=0
+SET TIMESTAMP=1447436970/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `est_g1`()
+    NO SQL
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE vOff integer DEFAULT 0;
+DECLARE vLong float DEFAULT 0;
+DECLARE vLat float DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre1 varchar(255) DEFAULT "";
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE cEst1 CURSOR FOR  select DISTINCT Nombre1, Nombre, Latitud, Longitud, is_Oficial from grupo1;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEst1;
+agregar_es: LOOP
+ FETCH cEst1 INTO vNombre1, vNombre, vLat, vLong, vOff;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET repetido = ( select count(nombre) from establecimiento where nombre=VNombre1);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  IF vOff = 'VERDADERO' THEN
+  SET vOff = 1;
+  END IF;
+
+ IF vNombre = 'Hospedaje' THEN
+  SET vNombre = 'Hotel';
+ END IF;
+
+ INSERT INTO establecimiento (Nombre, tipo, longitud, latitud, oficial) VALUES (vNombre1,vNOmbre,vLat, vLong, vOff);  
+ END IF;
+  
+END LOOP agregar_es;
+
+END
+/*!*/;
+# at 2248
+#151113 17:50:02 server id 1  end_log_pos 3543 	Query	thread_id=52	exec_time=0	error_code=0
+SET TIMESTAMP=1447437002/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `pre_g1`()
+    NO SQL
+BEGIN
+DECLARE vLinke INTEGER DEFAULT 0;
+DECLARE vLinks INTEGER DEFAULT 0;
+DECLARE vLinkt INTEGER DEFAULT 0;
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE vFecha date;
+DECLARE vHora time;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEstablecimiento varchar(255) DEFAULT "";
+DECLARE cPre1 CURSOR FOR  select distinct Fecha, Hora_Check_In,  Nombre1, Nombre2  from grupo1 where Nombre2 != ' ' and Hora_Check_In != 0;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cPre1;
+agregar_es: LOOP
+ FETCH cPre1 INTO vFecha, vHora, vEstablecimiento, VServicio;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET vLinke = (SELECT id_establecimiento from establecimiento where nombre = vEstablecimiento limit 1);
+  SET vLinks = (SELECT id_servicio from servicio where nombre = vServicio limit 1);
+  SET vLinkt = (SELECT id_establecimiento_servicio from establecimiento_servicio  where id_establecimiento = vLinke and
+  id_servicio=vLinks limit 1);
+  -- SELECT vLink;
+  
+  
+  INSERT INTO prereserva (horayfecha, id_establecimiento_servicio ) VALUES (concat(vFecha, ' ', vHora), vLinkt);  
+ 
+END LOOP agregar_es;
+END
+/*!*/;
+# at 3543
+#151113 17:50:32 server id 1  end_log_pos 4427 	Query	thread_id=58	exec_time=0	error_code=0
+SET TIMESTAMP=1447437032/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `serv_g1`()
+    NO SQL
+BEGIN
+
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE cServ2 CURSOR FOR select distinct Nombre2 from grupo1 where Nombre2 != ' ';
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cServ2;
+agregar_serv: LOOP
+ FETCH cServ2 INTO vNombre;
+ IF finished = 1 THEN 
+ LEAVE agregar_serv;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ set totalCount =(select count(nombre) from servicio where nombre = vNombre);
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO servicio (nombre) VALUES (vNombre);  
+ END IF;
+
+END LOOP agregar_serv;
+
+END
+/*!*/;
+# at 4427
+#151113 17:50:57 server id 1  end_log_pos 5856 	Query	thread_id=64	exec_time=0	error_code=0
+SET TIMESTAMP=1447437057/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `usr_g1`()
+    NO SQL
+BEGIN
+DECLARE estab Integer default 0;
+DECLARE vNrol varchar(255) default "";
+DECLARE repetido INTEGER default 0;
+DECLARE vPass varchar(255) DEFAULT " ";
+DECLARE vNombre1 varchar(255) DEFAULT "";
+DECLARE vRol integer DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre3 varchar(255) DEFAULT "";
+DECLARE vEmail varchar(255) DEFAULT "";
+DECLARE cUsr1 CURSOR FOR SELECT distinct  Nombre3, Email, id_rol, Nombre1, Pass from grupo1;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cUsr1;
+agregar_es: LOOP
+ FETCH cUsr1 INTO vNombre3, vEmail, vRol, vNombre1, vPass;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET repetido = ( select count(nombre) from usuario where nombre=VNombre3);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  IF vRol != 0 THEN
+
+  
+
+  SET estab = ( SELECT id_establecimiento from establecimiento where nombre = vNombre1 LIMIT 1);
+  IF vRol = 1 then
+   SET vNrol = 'normal';
+  END IF;
+
+  IF vRol = 2 then
+  SET vNrol = 'especial';  
+  END IF;
+
+  IF vRol = 3 then  
+  SET vNrol = 'administrador';
+   END IF;
+
+ INSERT INTO usuario (nombre, correo, rol, id_establecimiento, password) VALUES (vNombre3,vEmail,vNrol, estab, vPass);  
+ END IF;
+END IF;
+  
+END LOOP agregar_es;
+
+END
+/*!*/;
+# at 5856
+#151113 17:51:12 server id 1  end_log_pos 5961 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447437072/*!*/;
+create table prueba(fecha_hora datetime)
+/*!*/;
+# at 5961
+#151113 17:51:22 server id 1  end_log_pos 6226 	Query	thread_id=70	exec_time=0	error_code=0
+SET TIMESTAMP=1447437082/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `cargar_g1`()
+    NO SQL
+BEGIN
+call est_g1();
+call usr_g1();
+call cat_g1();
+call dim_g1();
+call serv_g1();
+call com_g1();
+call pre_g1();
+END
+/*!*/;
+# at 6226
+#151113 17:51:23 server id 1  end_log_pos 6423 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447437083/*!*/;
+SET @@session.time_zone='SYSTEM'/*!*/;
+CREATE DEFINER=`ingeusac`@`%` event evento_prueba ON schedule every 1 minute do INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 6423
+#151113 17:51:23 server id 1  end_log_pos 6501 	Query	thread_id=73	exec_time=0	error_code=0
+SET TIMESTAMP=1447437083/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 6501
+#151113 17:51:23 server id 1  end_log_pos 6606 	Query	thread_id=73	exec_time=0	error_code=0
+SET TIMESTAMP=1447437083/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 6606
+#151113 17:51:23 server id 1  end_log_pos 6633 	Xid = 353
+COMMIT/*!*/;
+# at 6633
+#151113 17:52:23 server id 1  end_log_pos 6711 	Query	thread_id=76	exec_time=0	error_code=0
+SET TIMESTAMP=1447437143/*!*/;
+BEGIN
+/*!*/;
+# at 6711
+#151113 17:52:23 server id 1  end_log_pos 6816 	Query	thread_id=76	exec_time=0	error_code=0
+SET TIMESTAMP=1447437143/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 6816
+#151113 17:52:23 server id 1  end_log_pos 6843 	Xid = 371
+COMMIT/*!*/;
+# at 6843
+#151113 17:52:26 server id 1  end_log_pos 6931 	Query	thread_id=78	exec_time=0	error_code=0
+SET TIMESTAMP=1447437146/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+DROP PROCEDURE `ad_log`
+/*!*/;
+# at 6931
+#151113 17:52:26 server id 1  end_log_pos 7320 	Query	thread_id=78	exec_time=0	error_code=0
+SET TIMESTAMP=1447437146/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `ad_log`(IN `usuario` VARCHAR(50), IN `accion` VARCHAR(50), IN `descripcion` INT(200), IN `fecha` DATETIME, IN `id_estable` INT)
+    NO SQL
+BEGIN
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values (usuario,accion,descripcion,fecha,id_estable);
+END
+/*!*/;
+# at 7320
+#151113 17:52:29 server id 1  end_log_pos 9016 	Query	thread_id=80	exec_time=0	error_code=0
+SET TIMESTAMP=1447437149/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `com_g5`()
+    NO SQL
+BEGIN
+DECLARE vLinke INTEGER DEFAULT 0;
+DECLARE vLinks INTEGER DEFAULT 0;
+DECLARE vLinkt INTEGER DEFAULT 0;
+DECLARE vEstablecimiento varchar(255) DEFAULT "";
+DECLARE vEst integer default 0;
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE vServ integer default 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vComentario varchar(255) DEFAULT "";
+DECLARE vValor varchar(255) DEFAULT "";
+DECLARE vValori integer default 0;
+DECLARE cCom5 CURSOR FOR select distinct Calificacion_idEstablecimiento, Calificacion_idServicio, Calificacion_punteo, Comentario_comentario from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cCom5;
+agregar_es: LOOP
+ FETCH cCom5 INTO vEst, vServ, vValori, vComentario;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+ 
+
+  SET vEstablecimiento = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vEst and Atributo_nombre='Nombre' limit 1);
+  SET vLinke = (SELECT id_establecimiento from establecimiento where nombre = vEstablecimiento limit 1);
+  SET vServicio = (select distinct Servicio_nombre from grupo5 where Servicio_id = vServ limit 1);
+  SET vLinks = (SELECT id_servicio from servicio where nombre = vServicio limit 1);
+  SET vLinkt = (SELECT id_establecimiento_servicio from establecimiento_servicio  where id_establecimiento = vLinke and
+  id_servicio=vLinks limit 1);
+  -- SELECT vLink;
+  
+  
+  INSERT INTO comentario (contenido, calificacion, id_establecimiento_servicio ) VALUES (vComentario, vValori, vLinkt);  
+ 
+END LOOP agregar_es;
+END
+/*!*/;
+# at 9016
+#151113 17:53:23 server id 1  end_log_pos 9094 	Query	thread_id=83	exec_time=0	error_code=0
+SET TIMESTAMP=1447437203/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 9094
+#151113 17:53:23 server id 1  end_log_pos 9199 	Query	thread_id=83	exec_time=0	error_code=0
+SET TIMESTAMP=1447437203/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 9199
+#151113 17:53:23 server id 1  end_log_pos 9226 	Xid = 430
+COMMIT/*!*/;
+# at 9226
+#151113 17:54:23 server id 1  end_log_pos 9304 	Query	thread_id=92	exec_time=0	error_code=0
+SET TIMESTAMP=1447437263/*!*/;
+BEGIN
+/*!*/;
+# at 9304
+#151113 17:54:23 server id 1  end_log_pos 9409 	Query	thread_id=92	exec_time=0	error_code=0
+SET TIMESTAMP=1447437263/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 9409
+#151113 17:54:23 server id 1  end_log_pos 9436 	Xid = 459
+COMMIT/*!*/;
+# at 9436
+#151113 17:55:23 server id 1  end_log_pos 9514 	Query	thread_id=97	exec_time=0	error_code=0
+SET TIMESTAMP=1447437323/*!*/;
+BEGIN
+/*!*/;
+# at 9514
+#151113 17:55:23 server id 1  end_log_pos 9619 	Query	thread_id=97	exec_time=0	error_code=0
+SET TIMESTAMP=1447437323/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 9619
+#151113 17:55:23 server id 1  end_log_pos 9646 	Xid = 467
+COMMIT/*!*/;
+# at 9646
+#151113 17:56:05 server id 1  end_log_pos 10801 	Query	thread_id=101	exec_time=0	error_code=0
+SET TIMESTAMP=1447437365/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `es_g5`()
+    NO SQL
+BEGIN
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE par varchar(255) default "";
+DECLARE vEst INTEGER DEFAULT 0;
+DECLARE vSer INTEGER DEFAULT 0;
+DECLARE vEstv varchar(255) DEFAULT "";
+DECLARE vServ varchar(255) DEFAULT "";
+DECLARE cEs5 CURSOR FOR 
+select distinct Establecimiento_id, Servicio_nombre from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEs5;
+agregar_es: LOOP
+ FETCH cEs5 INTO vEst, vServ;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+ -- nombre del establecimiento
+ set par = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vEst and Atributo_nombre='Nombre' LIMIT 1);
+  set vEst = (select id_establecimiento from establecimiento where nombre= par LIMIT 1);
+ set vSer = (select id_servicio from servicio where nombre= vServ LIMIT 1);
+  INSERT INTO establecimiento_servicio (id_establecimiento, id_servicio) VALUES (vEst, vSer);  
+ 
+END LOOP agregar_es;
+END
+/*!*/;
+# at 10801
+#151113 17:56:23 server id 1  end_log_pos 10879 	Query	thread_id=112	exec_time=0	error_code=0
+SET TIMESTAMP=1447437383/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 10879
+#151113 17:56:23 server id 1  end_log_pos 10984 	Query	thread_id=112	exec_time=0	error_code=0
+SET TIMESTAMP=1447437383/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 10984
+#151113 17:56:23 server id 1  end_log_pos 11011 	Xid = 550
+COMMIT/*!*/;
+# at 11011
+#151113 17:56:39 server id 1  end_log_pos 12812 	Query	thread_id=116	exec_time=0	error_code=0
+SET TIMESTAMP=1447437399/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `est_g5`()
+    NO SQL
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE vId integer DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vLong varchar(255) DEFAULT "";
+DECLARE vLat varchar(255) DEFAULT "";
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vTipo varchar(255) DEFAULT "";
+DECLARE vOff varchar(255) DEFAULT "";
+DECLARE vOffi integer default 0;
+DECLARE cEst5 CURSOR FOR select distinct Establecimiento_id from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEst5;
+agregar_es: LOOP
+ FETCH cEst5 INTO vId;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+	SET vNombre =(select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Nombre');
+  SET repetido = ( select count(nombre) from establecimiento where nombre=vNombre);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  SET vLong =(select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Longitud');
+  SET vLat = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Latitud');
+  SET vTipo = (select distinct TipoEstablecimiento_nombre from  grupo5 where Establecimiento_id = vId);
+  SET vOff = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Oficial');
+  SET vOffi = CAST(vOff as unsigned);
+  IF vOffi > 0 then
+   SET vOffi = 1;
+ END IF;
+ IF vOffi = 0 then
+ set vOffi = 0;
+ END IF;
+  INSERT INTO establecimiento (nombre, tipo, longitud, latitud, oficial) VALUES (vNombre,vTipo,CAST(vLat as DECIMAL(6,6)), CAST(vLong as DECIMAL(6,6)), vOffi);  
+ END IF;
+  
+END LOOP agregar_es;
+END
+/*!*/;
+# at 12812
+#151113 17:57:13 server id 1  end_log_pos 13677 	Query	thread_id=131	exec_time=0	error_code=0
+SET TIMESTAMP=1447437433/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `serv_g5`()
+    NO SQL
+BEGIN
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE cServ5 CURSOR FOR select distinct Servicio_nombre from grupo5;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cServ5;
+agregar_serv: LOOP
+ FETCH cServ5 INTO vNombre;
+ IF finished = 1 THEN 
+ LEAVE agregar_serv;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ set totalCount =(select count(nombre) from servicio where nombre = vNombre);
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO servicio (nombre) VALUES (vNombre);  
+ END IF;
+
+END LOOP agregar_serv;
+END
+/*!*/;
+# at 13677
+#151113 17:57:23 server id 1  end_log_pos 13755 	Query	thread_id=134	exec_time=0	error_code=0
+SET TIMESTAMP=1447437443/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 13755
+#151113 17:57:23 server id 1  end_log_pos 13860 	Query	thread_id=134	exec_time=0	error_code=0
+SET TIMESTAMP=1447437443/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 13860
+#151113 17:57:23 server id 1  end_log_pos 13887 	Xid = 657
+COMMIT/*!*/;
+# at 13887
+#151113 17:57:58 server id 1  end_log_pos 15804 	Query	thread_id=138	exec_time=0	error_code=0
+SET TIMESTAMP=1447437478/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `usr_g5`()
+    NO SQL
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE existe integer default 0;
+DEClARE rid integer default 0;
+DECLARE vId integer DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vFecha date ;
+DECLARE vTel integer DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEmail varchar(255) DEFAULT "";
+DECLARE vPass varchar(255) DEFAULT "";
+DECLARE vTipo integer default 0;
+DECLARE vTipov varchar(255) default "";
+DECLARE cUsr5 CURSOR FOR select distinct Usuario_id, Usuario_nombre, Usuario_fechaNacimiento, Usuario_telefono, 
+Usuario_correo, Usuario_password, Usuario_idTipoUsuario from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cUsr5;
+agregar_es: LOOP
+ FETCH cUsr5 INTO vId, vNombre, vFecha, vTel, vEmail, vPass,vTipo;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+  SET repetido = ( select count(nombre) from establecimiento where nombre=vNombre);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ IF vTipo = 1 then
+   SET vTipov = 'normal';
+ END IF;
+ IF vTipo = 2 then
+ set vTipov = 'especial';
+ END IF;
+
+ IF vTipo = 3 then
+ SET vTipov = 'administrador';
+END IF;
+
+ set existe = ( select distinct count(Establecimiento_id) from  grupo5 where Atributo_nombre='Oficial' and Valor_valor = vId);
+
+ if existe > 0 then
+ set rid = (select distinct Establecimiento_id from  grupo5 where Atributo_nombre='Oficial' and Valor_valor = vId);
+ end if;
+
+ IF rid = 0 then
+  INSERT INTO usuario (nombre, telefono, correo, rol, password) VALUES (vNombre,vTel,vEmail,vTipov, vPass); 
+end if;
+if rid > 0 then
+  INSERT INTO usuario (nombre, telefono, correo, rol, id_establecimiento, password) VALUES (vNombre,vTel,vEmail,vTipov, rid ,vPass); 
+end if;
+END IF;
+  
+END LOOP agregar_es;
+END
+/*!*/;
+# at 15804
+#151113 17:58:19 server id 1  end_log_pos 16041 	Query	thread_id=144	exec_time=0	error_code=0
+SET TIMESTAMP=1447437499/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `cargar_g5`()
+    NO SQL
+BEGIN
+ call est_g5();
+ call usr_g5();
+ call serv_g5();
+ call es_g5();
+ call com_g5();
+END
+/*!*/;
+# at 16041
+#151113 17:58:23 server id 1  end_log_pos 16119 	Query	thread_id=147	exec_time=0	error_code=0
+SET TIMESTAMP=1447437503/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 16119
+#151113 17:58:23 server id 1  end_log_pos 16224 	Query	thread_id=147	exec_time=0	error_code=0
+SET TIMESTAMP=1447437503/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 16224
+#151113 17:58:23 server id 1  end_log_pos 16251 	Xid = 738
+COMMIT/*!*/;
+# at 16251
+#151113 17:59:23 server id 1  end_log_pos 16329 	Query	thread_id=157	exec_time=0	error_code=0
+SET TIMESTAMP=1447437563/*!*/;
+BEGIN
+/*!*/;
+# at 16329
+#151113 17:59:23 server id 1  end_log_pos 16434 	Query	thread_id=157	exec_time=0	error_code=0
+SET TIMESTAMP=1447437563/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 16434
+#151113 17:59:23 server id 1  end_log_pos 16461 	Xid = 766
+COMMIT/*!*/;
+# at 16461
+#151113 17:59:49 server id 1  end_log_pos 17593 	Query	thread_id=165	exec_time=0	error_code=0
+SET TIMESTAMP=1447437589/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `com_g3`()
+    NO SQL
+BEGIN
+
+DECLARE vLink INTEGER DEFAULT 5;
+DECLARE vCom varchar(255) DEFAULT "";
+DECLARE vCal INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE cCom CURSOR FOR select DISTINCT Nombre, Servicio_Establecimiento, Calificacion, Comentario from grupo3;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cCom;
+agregar_es: LOOP
+ FETCH cCom INTO vNombre, vServicio, vCal, Vcom;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET vLink = (SELECT id_establecimiento_servicio from establecimiento_servicio 
+where id_establecimiento IN(
+SELECT id_establecimiento from establecimiento where nombre = vNombre)
+and id_servicio IN(SELECT id_servicio from servicio where nombre = vServicio)limit 1);
+
+  -- SELECT vLink;
+  
+  
+  INSERT INTO comentario (contenido, calificacion, id_establecimiento_servicio ) VALUES (vCom, vCal, vLink);  
+ 
+END LOOP agregar_es;
+
+END
+/*!*/;
+# at 17593
+#151113 18:00:15 server id 1  end_log_pos 18403 	Query	thread_id=173	exec_time=0	error_code=0
+SET TIMESTAMP=1447437615/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `es_g3`()
+    NO SQL
+BEGIN
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEs INTEGER DEFAULT 0;
+DECLARE vSe INTEGER DEFAULT 0;
+DECLARE cEs CURSOR FOR select DISTINCT e.id_establecimiento, s.id_servicio from establecimiento e, servicio s, grupo3 g 
+where g.nombre = e.nombre and s.nombre = g.Servicio_Establecimiento;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEs;
+agregar_es: LOOP
+ FETCH cEs INTO vEs, vSe;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+  INSERT INTO establecimiento_servicio (id_establecimiento, id_servicio) VALUES (vEs, vSe);  
+ 
+END LOOP agregar_es;
+
+END
+/*!*/;
+# at 18403
+#151113 18:00:23 server id 1  end_log_pos 18481 	Query	thread_id=180	exec_time=0	error_code=0
+SET TIMESTAMP=1447437623/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 18481
+#151113 18:00:23 server id 1  end_log_pos 18586 	Query	thread_id=180	exec_time=0	error_code=0
+SET TIMESTAMP=1447437623/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 18586
+#151113 18:00:23 server id 1  end_log_pos 18613 	Xid = 885
+COMMIT/*!*/;
+# at 18613
+#151113 18:00:51 server id 1  end_log_pos 19956 	Query	thread_id=188	exec_time=0	error_code=0
+SET TIMESTAMP=1447437651/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `est_g3`()
+    NO SQL
+BEGIN
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+Declare vLat float DEFAULT 0;
+Declare vLong float DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vEs_oficial varchar(255) DEFAULT "";
+DECLARE vTipo varchar(255) DEFAULT "";
+DECLARE cEst CURSOR FOR SELECT DISTINCT Nombre, Es_oficial, Tipo_establecimiento FROM grupo3;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEst;
+get_email: LOOP
+ FETCH cEst INTO vNombre, vEs_oficial, vTipo;
+ IF finished = 1 THEN 
+ LEAVE get_email;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ Select totalCount = count(*) From establecimiento where nombre=vNombre;
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  IF vEs_oficial = 'Si' THEN
+  SET Off = 1;
+  END IF;
+
+ INSERT INTO establecimiento (Nombre, Oficial, tipo) VALUES (vNombre, Off, vTipo);  
+ END IF;
+
+
+END LOOP get_email;
+/*CREATE TEMPORARY TABLE TmpEst (Nombre Varchar(255), Coord varchar(255), Oficial varchar(255)); 
+INSERT INTO TmpEst SELECT DISTINCT Nombre, Coordenadas, Es_oficial FROM grupo3;
+
+
+DROP TABLE TmpEst;*/
+
+END
+/*!*/;
+# at 19956
+#151113 18:01:22 server id 1  end_log_pos 21085 	Query	thread_id=194	exec_time=0	error_code=0
+SET TIMESTAMP=1447437682/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `serv_g3`()
+    NO SQL
+BEGIN
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vSe varchar(255) DEFAULT "";
+DECLARE vDe varchar(255) DEFAULT "";
+DECLARE cServ CURSOR FOR select DISTINCT Servicio_Establecimiento, Descripcion from grupo3;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cServ;
+agregar_serv: LOOP
+ FETCH cServ INTO vSe, vDe;
+ IF finished = 1 THEN 
+ LEAVE agregar_serv;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ Select totalCount = count(*) From servicio where nombre=vSe;
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO servicio (nombre, descripcion) VALUES (vSe, vDe);  
+ END IF;
+
+
+END LOOP agregar_serv;
+/*CREATE TEMPORARY TABLE TmpEst (Nombre Varchar(255), Coord varchar(255), Oficial varchar(255)); 
+INSERT INTO TmpEst SELECT DISTINCT Nombre, Coordenadas, Es_oficial FROM grupo3;
+
+
+DROP TABLE TmpEst;*/
+
+END
+/*!*/;
+# at 21085
+#151113 18:01:23 server id 1  end_log_pos 21163 	Query	thread_id=197	exec_time=0	error_code=0
+SET TIMESTAMP=1447437683/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 21163
+#151113 18:01:23 server id 1  end_log_pos 21268 	Query	thread_id=197	exec_time=0	error_code=0
+SET TIMESTAMP=1447437683/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 21268
+#151113 18:01:23 server id 1  end_log_pos 21295 	Xid = 1933
+COMMIT/*!*/;
+# at 21295
+#151113 18:01:32 server id 1  end_log_pos 21365 	Query	thread_id=199	exec_time=0	error_code=0
+SET TIMESTAMP=1447437692/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+BEGIN
+/*!*/;
+# at 21365
+#151113 18:01:32 server id 1  end_log_pos 21393 	Intvar
+SET INSERT_ID=1/*!*/;
+# at 21393
+#151113 18:01:32 server id 1  end_log_pos 21817 	Query	thread_id=199	exec_time=0	error_code=0
+SET TIMESTAMP=1447437692/*!*/;
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values ( NAME_CONST('usuario',_latin1'usuario1' COLLATE 'latin1_swedish_ci'), NAME_CONST('accion',_latin1'insertar' COLLATE 'latin1_swedish_ci'), NAME_CONST('descripcion',0), NAME_CONST('fecha',_latin1'2015-11-25 06:19:19' COLLATE 'latin1_swedish_ci'), NAME_CONST('id_estable',0))
+/*!*/;
+# at 21817
+#151113 18:01:32 server id 1  end_log_pos 21844 	Xid = 1946
+COMMIT/*!*/;
+# at 21844
+#151113 18:01:44 server id 1  end_log_pos 22064 	Query	thread_id=205	exec_time=0	error_code=0
+SET TIMESTAMP=1447437704/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `cargar_g3`()
+    NO SQL
+BEGIN
+ call est_g3();
+ call serv_g3();
+ call es_g3();
+ call com_g3();
+END
+/*!*/;
+# at 22064
+#151113 18:01:54 server id 1  end_log_pos 22134 	Query	thread_id=211	exec_time=0	error_code=0
+SET TIMESTAMP=1447437714/*!*/;
+BEGIN
+/*!*/;
+# at 22134
+#151113 18:01:54 server id 1  end_log_pos 22265 	Query	thread_id=211	exec_time=0	error_code=0
+SET TIMESTAMP=1447437714/*!*/;
+DELETE FROM `bases2`.`bitacora` WHERE `bitacora`.`id_bitacora` = 1
+/*!*/;
+# at 22265
+#151113 18:01:54 server id 1  end_log_pos 22292 	Xid = 2014
+COMMIT/*!*/;
+# at 22292
+#151113 18:02:23 server id 1  end_log_pos 22370 	Query	thread_id=212	exec_time=0	error_code=0
+SET TIMESTAMP=1447437743/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 22370
+#151113 18:02:23 server id 1  end_log_pos 22475 	Query	thread_id=212	exec_time=0	error_code=0
+SET TIMESTAMP=1447437743/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 22475
+#151113 18:02:23 server id 1  end_log_pos 22502 	Xid = 2019
+COMMIT/*!*/;
+# at 22502
+#151113 18:03:06 server id 1  end_log_pos 22572 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447437786/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+BEGIN
+/*!*/;
+# at 22572
+#151113 18:03:06 server id 1  end_log_pos 22655 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447437786/*!*/;
+delete from prueba
+/*!*/;
+# at 22655
+#151113 18:03:06 server id 1  end_log_pos 22682 	Xid = 2021
+COMMIT/*!*/;
+# at 22682
+#151113 18:03:23 server id 1  end_log_pos 22760 	Query	thread_id=213	exec_time=0	error_code=0
+SET TIMESTAMP=1447437803/*!*/;
+SET @@session.sql_auto_is_null=1/*!*/;
+BEGIN
+/*!*/;
+# at 22760
+#151113 18:03:23 server id 1  end_log_pos 22865 	Query	thread_id=213	exec_time=0	error_code=0
+SET TIMESTAMP=1447437803/*!*/;
+INSERT INTO prueba VALUES(now())
+/*!*/;
+# at 22865
+#151113 18:03:23 server id 1  end_log_pos 22892 	Xid = 2022
+COMMIT/*!*/;
+# at 22892
+#151113 18:03:27 server id 1  end_log_pos 23002 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447437807/*!*/;
+SET @@session.sql_auto_is_null=0/*!*/;
+ALTER event evento_prueba disable
+/*!*/;
+# at 23002
+#151113 18:03:32 server id 1  end_log_pos 23112 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447437812/*!*/;
+DROP TABLE `prueba` /* generated by server */
+/*!*/;
+# at 23112
+#151113 18:05:57 server id 1  end_log_pos 23190 	Query	thread_id=224	exec_time=0	error_code=0
+SET TIMESTAMP=1447437957/*!*/;
+BEGIN
+/*!*/;
+# at 23190
+#151113 18:05:57 server id 1  end_log_pos 23218 	Intvar
+SET INSERT_ID=2/*!*/;
+# at 23218
+#151113 18:05:57 server id 1  end_log_pos 23671 	Query	thread_id=224	exec_time=0	error_code=0
+SET TIMESTAMP=1447437957/*!*/;
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values ( NAME_CONST('usuario',_latin1'user1@correo.com' COLLATE 'latin1_swedish_ci'), NAME_CONST('accion',_latin1'Ingreso al sistema' COLLATE 'latin1_swedish_ci'), NAME_CONST('descripcion',0), NAME_CONST('fecha',_latin1'2015-11-13 18:05:57' COLLATE 'latin1_swedish_ci'), NAME_CONST('id_estable',NULL))
+/*!*/;
+# at 23671
+#151113 18:05:57 server id 1  end_log_pos 23698 	Xid = 2053
+COMMIT/*!*/;
+# at 23698
+#151113 18:06:37 server id 1  end_log_pos 23786 	Query	thread_id=235	exec_time=0	error_code=0
+SET TIMESTAMP=1447437997/*!*/;
+DROP PROCEDURE `ad_log`
+/*!*/;
+# at 23786
+#151113 18:06:37 server id 1  end_log_pos 24179 	Query	thread_id=235	exec_time=0	error_code=0
+SET TIMESTAMP=1447437997/*!*/;
+CREATE DEFINER=`ingeusac`@`%` PROCEDURE `ad_log`(IN `usuario` VARCHAR(50), IN `accion` VARCHAR(50), IN `descripcion` VARCHAR(200), IN `fecha` DATETIME, IN `id_estable` INT)
+    NO SQL
+BEGIN
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values (usuario,accion,descripcion,fecha,id_estable);
+END
+/*!*/;
+# at 24179
+#151113 18:07:04 server id 1  end_log_pos 24249 	Query	thread_id=237	exec_time=0	error_code=0
+SET TIMESTAMP=1447438024/*!*/;
+BEGIN
+/*!*/;
+# at 24249
+#151113 18:07:04 server id 1  end_log_pos 24380 	Query	thread_id=237	exec_time=0	error_code=0
+SET TIMESTAMP=1447438024/*!*/;
+DELETE FROM `bases2`.`bitacora` WHERE `bitacora`.`id_bitacora` = 2
+/*!*/;
+# at 24380
+#151113 18:07:04 server id 1  end_log_pos 24407 	Xid = 2114
+COMMIT/*!*/;
+# at 24407
+#151113 18:07:25 server id 1  end_log_pos 24485 	Query	thread_id=239	exec_time=0	error_code=0
+SET TIMESTAMP=1447438045/*!*/;
+BEGIN
+/*!*/;
+# at 24485
+#151113 18:07:25 server id 1  end_log_pos 24513 	Intvar
+SET INSERT_ID=3/*!*/;
+# at 24513
+#151113 18:07:25 server id 1  end_log_pos 25018 	Query	thread_id=239	exec_time=0	error_code=0
+SET TIMESTAMP=1447438045/*!*/;
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values ( NAME_CONST('usuario',_latin1'user1@correo.com' COLLATE 'latin1_swedish_ci'), NAME_CONST('accion',_latin1'Ingreso al sistema' COLLATE 'latin1_swedish_ci'), NAME_CONST('descripcion',_latin1'Usuario especial' COLLATE 'latin1_swedish_ci'), NAME_CONST('fecha',_latin1'2015-11-13 18:07:25' COLLATE 'latin1_swedish_ci'), NAME_CONST('id_estable',NULL))
+/*!*/;
+# at 25018
+#151113 18:07:25 server id 1  end_log_pos 25045 	Xid = 2121
+COMMIT/*!*/;
+# at 25045
+#151113 18:10:58 server id 1  end_log_pos 25109 	Query	thread_id=243	exec_time=0	error_code=0
+SET TIMESTAMP=1447438258/*!*/;
+/*!\C latin1 *//*!*/;
+SET @@session.character_set_client=8,@@session.collation_connection=8,@@session.collation_server=8/*!*/;
+BEGIN
+/*!*/;
+# at 25109
+#151113 18:10:58 server id 1  end_log_pos 25646 	Query	thread_id=243	exec_time=0	error_code=0
+SET TIMESTAMP=1447438258/*!*/;
+REPLACE INTO `phpmyadmin`.`pma__recent` (`username`, `tables`) VALUES ('ingeusac', '[{"db":"bases2","table":"usuario"},{"db":"bases2","table":"bitacora"},{"db":"bases2","table":"establecimiento"},{"db":"bases2","table":"establecimiento_dimension"},{"db":"bases2","table":"categoria"},{"db":"bases2","table":"dimension"},{"db":"bases2","table":"comentario"},{"db":"bases2","table":"servicio"},{"db":"bases2","table":"establecimiento_usuario"},{"db":"mysql","table":"slow_log"}]')
+/*!*/;
+# at 25646
+#151113 18:10:58 server id 1  end_log_pos 25673 	Xid = 2145
+COMMIT/*!*/;
+# at 25673
+#151113 18:11:39 server id 1  end_log_pos 25751 	Query	thread_id=248	exec_time=0	error_code=0
+SET TIMESTAMP=1447438299/*!*/;
+/*!\C utf8 *//*!*/;
+SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=8/*!*/;
+BEGIN
+/*!*/;
+# at 25751
+#151113 18:11:39 server id 1  end_log_pos 25779 	Intvar
+SET INSERT_ID=4/*!*/;
+# at 25779
+#151113 18:11:39 server id 1  end_log_pos 26283 	Query	thread_id=248	exec_time=0	error_code=0
+use `bases2`/*!*/;
+SET TIMESTAMP=1447438299/*!*/;
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values ( NAME_CONST('usuario',_latin1'correo@correo.com' COLLATE 'latin1_swedish_ci'), NAME_CONST('accion',_latin1'Ingreso al sistema' COLLATE 'latin1_swedish_ci'), NAME_CONST('descripcion',_latin1'Usuario normal' COLLATE 'latin1_swedish_ci'), NAME_CONST('fecha',_latin1'2015-11-13 18:11:39' COLLATE 'latin1_swedish_ci'), NAME_CONST('id_estable',NULL))
+/*!*/;
+# at 26283
+#151113 18:11:39 server id 1  end_log_pos 26310 	Xid = 2162
+COMMIT/*!*/;
+# at 26310
+#151113 18:11:39 server id 1  end_log_pos 26884 	Query	thread_id=44	exec_time=0	error_code=0
+SET TIMESTAMP=1447438299/*!*/;
+create table log_evento(
+  id int UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  fecha datetime,
+  num_reg_bitacora int,
+  num_reg_caracteristica int,
+  num_reg_categoria int,
+  num_reg_comentario int,
+  num_reg_dimension int,
+  num_reg_establecimiento int,
+  num_reg_establecimiento_dim int,
+  num_reg_establecimiento_ser int,
+  num_reg_establecimiento_usuario int,
+  num_reg_prereserva int,
+  num_reg_servicio int,
+  num_reg_usuario int,
+  num_inserciones int,
+  num_actualizaciones int,
+  num_eliminaciones int  
+)
+/*!*/;
+# at 26884
+#151113 18:14:11 server id 1  end_log_pos 26954 	Query	thread_id=262	exec_time=0	error_code=0
+SET TIMESTAMP=1447438451/*!*/;
+BEGIN
+/*!*/;
+# at 26954
+#151113 18:14:11 server id 1  end_log_pos 26982 	Intvar
+SET INSERT_ID=38/*!*/;
+# at 26982
+#151113 18:14:11 server id 1  end_log_pos 27506 	Query	thread_id=262	exec_time=0	error_code=0
+SET TIMESTAMP=1447438451/*!*/;
+insert into establecimiento (nombre,direccion,tipo,longitud,latitud,oficial,calificacion_general) values ( NAME_CONST('pnombre',_latin1'La Estancia' COLLATE 'latin1_swedish_ci'), NAME_CONST('pdireccion',_latin1'Villa Nueva, Santa Clara' COLLATE 'latin1_swedish_ci'), NAME_CONST('ptipo',_latin1'Restaurante' COLLATE 'latin1_swedish_ci'), NAME_CONST('plongitud',-5.66899), NAME_CONST('platitud',40.9682), NAME_CONST('poficial',0), NAME_CONST('pcalificacion',4))
+/*!*/;
+# at 27506
+#151113 18:14:11 server id 1  end_log_pos 27533 	Xid = 2186
+COMMIT/*!*/;
+# at 27533
+#151113 18:14:11 server id 1  end_log_pos 27611 	Query	thread_id=263	exec_time=0	error_code=0
+SET TIMESTAMP=1447438451/*!*/;
+BEGIN
+/*!*/;
+# at 27611
+#151113 18:14:11 server id 1  end_log_pos 27639 	Intvar
+SET INSERT_ID=5/*!*/;
+# at 27639
+#151113 18:14:11 server id 1  end_log_pos 28168 	Query	thread_id=263	exec_time=0	error_code=0
+SET TIMESTAMP=1447438451/*!*/;
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values ( NAME_CONST('usuario',_latin1'u2' COLLATE 'latin1_swedish_ci'), NAME_CONST('accion',_latin1'Insertar Establecimiento' COLLATE 'latin1_swedish_ci'), NAME_CONST('descripcion',_latin1'Registro establecimiento no oficial: La Estancia' COLLATE 'latin1_swedish_ci'), NAME_CONST('fecha',_latin1'2015-11-13 18:14:11' COLLATE 'latin1_swedish_ci'), NAME_CONST('id_estable',NULL))
+/*!*/;
+# at 28168
+#151113 18:14:11 server id 1  end_log_pos 28195 	Xid = 2188
+COMMIT/*!*/;
+# at 28195
+#151113 18:14:30 server id 1  end_log_pos 28259 	Query	thread_id=268	exec_time=0	error_code=0
+SET TIMESTAMP=1447438470/*!*/;
+/*!\C latin1 *//*!*/;
+SET @@session.character_set_client=8,@@session.collation_connection=8,@@session.collation_server=8/*!*/;
+BEGIN
+/*!*/;
+# at 28259
+#151113 18:14:30 server id 1  end_log_pos 28796 	Query	thread_id=268	exec_time=0	error_code=0
+SET TIMESTAMP=1447438470/*!*/;
+REPLACE INTO `phpmyadmin`.`pma__recent` (`username`, `tables`) VALUES ('ingeusac', '[{"db":"bases2","table":"bitacora"},{"db":"bases2","table":"usuario"},{"db":"bases2","table":"establecimiento"},{"db":"bases2","table":"establecimiento_dimension"},{"db":"bases2","table":"categoria"},{"db":"bases2","table":"dimension"},{"db":"bases2","table":"comentario"},{"db":"bases2","table":"servicio"},{"db":"bases2","table":"establecimiento_usuario"},{"db":"mysql","table":"slow_log"}]')
+/*!*/;
+# at 28796
+#151113 18:14:30 server id 1  end_log_pos 28823 	Xid = 2211
+COMMIT/*!*/;
+# at 28823
+#151113 18:23:25 server id 1  end_log_pos 28893 	Query	thread_id=283	exec_time=0	error_code=0
+SET TIMESTAMP=1447439005/*!*/;
+/*!\C utf8 *//*!*/;
+SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=8/*!*/;
+BEGIN
+/*!*/;
+# at 28893
+#151113 18:23:25 server id 1  end_log_pos 29460 	Query	thread_id=283	exec_time=0	error_code=0
+use `bases2`/*!*/;
+SET TIMESTAMP=1447439005/*!*/;
+update establecimiento
+set calificacion_general = 
+
+(select avg(subquery.prom)  from(
+
+select es.id_establecimiento_servicio,  avg(c.calificacion) as prom from comentario as c, establecimiento_servicio as es,  servicio as s
+where es.id_servicio = s.id_servicio
+and es.id_establecimiento =  NAME_CONST('idestable',2)
+and c.id_establecimiento_servicio = es.id_establecimiento_servicio
+group by es.id_establecimiento_servicio) as subquery)
+
+where id_establecimiento =  NAME_CONST('idestable',2)
+/*!*/;
+# at 29460
+#151113 18:23:25 server id 1  end_log_pos 29487 	Xid = 2243
+COMMIT/*!*/;
+# at 29487
+#151113 18:24:04 server id 1  end_log_pos 29557 	Query	thread_id=289	exec_time=0	error_code=0
+SET TIMESTAMP=1447439044/*!*/;
+BEGIN
+/*!*/;
+# at 29557
+#151113 18:24:04 server id 1  end_log_pos 29585 	Intvar
+SET INSERT_ID=28/*!*/;
+# at 29585
+#151113 18:24:04 server id 1  end_log_pos 29897 	Query	thread_id=289	exec_time=0	error_code=0
+SET TIMESTAMP=1447439044/*!*/;
+insert into prereserva (horayfecha,cantpersonas,id_establecimiento_servicio,id_usuario)  values ( NAME_CONST('pfecha',_latin1'2015-11-30 06:15:00' COLLATE 'latin1_swedish_ci'), NAME_CONST('pcant',2), NAME_CONST('pides',5), NAME_CONST('pidusr',13))
+/*!*/;
+# at 29897
+#151113 18:24:04 server id 1  end_log_pos 29924 	Xid = 2256
+COMMIT/*!*/;
+# at 29924
+#151113 18:24:04 server id 1  end_log_pos 30002 	Query	thread_id=290	exec_time=0	error_code=0
+SET TIMESTAMP=1447439044/*!*/;
+BEGIN
+/*!*/;
+# at 30002
+#151113 18:24:04 server id 1  end_log_pos 30030 	Intvar
+SET INSERT_ID=6/*!*/;
+# at 30030
+#151113 18:24:04 server id 1  end_log_pos 30531 	Query	thread_id=290	exec_time=0	error_code=0
+SET TIMESTAMP=1447439044/*!*/;
+insert into bitacora (usuario, accion, Descripcion, fecha,id_establecimiento)
+values ( NAME_CONST('usuario',_latin1'u2' COLLATE 'latin1_swedish_ci'), NAME_CONST('accion',_latin1'Insertar Prereserva' COLLATE 'latin1_swedish_ci'), NAME_CONST('descripcion',_latin1'Creacion por usuario cliente' COLLATE 'latin1_swedish_ci'), NAME_CONST('fecha',_latin1'2015-11-13 18:24:04' COLLATE 'latin1_swedish_ci'), NAME_CONST('id_estable',5))
+/*!*/;
+# at 30531
+#151113 18:24:04 server id 1  end_log_pos 30558 	Xid = 2258
+COMMIT/*!*/;
+# at 30558
+#151113 18:24:04 server id 1  end_log_pos 30628 	Query	thread_id=292	exec_time=0	error_code=0
+SET TIMESTAMP=1447439044/*!*/;
+BEGIN
+/*!*/;
+# at 30628
+#151113 18:24:04 server id 1  end_log_pos 31195 	Query	thread_id=292	exec_time=0	error_code=0
+SET TIMESTAMP=1447439044/*!*/;
+update establecimiento
+set calificacion_general = 
+
+(select avg(subquery.prom)  from(
+
+select es.id_establecimiento_servicio,  avg(c.calificacion) as prom from comentario as c, establecimiento_servicio as es,  servicio as s
+where es.id_servicio = s.id_servicio
+and es.id_establecimiento =  NAME_CONST('idestable',2)
+and c.id_establecimiento_servicio = es.id_establecimiento_servicio
+group by es.id_establecimiento_servicio) as subquery)
+
+where id_establecimiento =  NAME_CONST('idestable',2)
+/*!*/;
+# at 31195
+#151113 18:24:04 server id 1  end_log_pos 31222 	Xid = 2264
+COMMIT/*!*/;
+# at 31222
+#151113 18:26:55 server id 1  end_log_pos 31292 	Query	thread_id=303	exec_time=0	error_code=0
+SET TIMESTAMP=1447439215/*!*/;
+BEGIN
+/*!*/;
+# at 31292
+#151113 18:26:55 server id 1  end_log_pos 31445 	Query	thread_id=303	exec_time=0	error_code=0
+SET TIMESTAMP=1447439215/*!*/;
+UPDATE `bases2`.`bitacora` SET `usuario` = 'usuario1' WHERE `bitacora`.`id_bitacora` = 3
+/*!*/;
+# at 31445
+#151113 18:26:55 server id 1  end_log_pos 31472 	Xid = 2301
+COMMIT/*!*/;
+# at 31472
+#151113 18:27:03 server id 1  end_log_pos 31542 	Query	thread_id=305	exec_time=0	error_code=0
+SET TIMESTAMP=1447439223/*!*/;
+BEGIN
+/*!*/;
+# at 31542
+#151113 18:27:03 server id 1  end_log_pos 31689 	Query	thread_id=305	exec_time=0	error_code=0
+SET TIMESTAMP=1447439223/*!*/;
+UPDATE `bases2`.`bitacora` SET `usuario` = 'u2' WHERE `bitacora`.`id_bitacora` = 4
+/*!*/;
+# at 31689
+#151113 18:27:03 server id 1  end_log_pos 31716 	Xid = 2315
+COMMIT/*!*/;
+DELIMITER ;
+# End of log file
+ROLLBACK /* added by mysqlbinlog */;
+/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
+/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;

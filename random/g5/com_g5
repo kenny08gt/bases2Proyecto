@@ -1,0 +1,44 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `com_g5`()
+BEGIN
+DECLARE vLinke INTEGER DEFAULT 0;
+DECLARE vLinks INTEGER DEFAULT 0;
+DECLARE vLinkt INTEGER DEFAULT 0;
+DECLARE vEstablecimiento varchar(255) DEFAULT "";
+DECLARE vEst integer default 0;
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE vServ integer default 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vComentario varchar(255) DEFAULT "";
+DECLARE vValor varchar(255) DEFAULT "";
+DECLARE vValori integer default 0;
+DECLARE cCom5 CURSOR FOR select distinct Calificacion_idEstablecimiento, Calificacion_idServicio, Calificacion_punteo, Comentario_comentario from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cCom5;
+agregar_es: LOOP
+ FETCH cCom5 INTO vEst, vServ, vValori, vComentario;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+ 
+
+  SET vEstablecimiento = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vEst and Atributo_nombre='Nombre' limit 1);
+  SET vLinke = (SELECT id_establecimiento from establecimiento where nombre = vEstablecimiento limit 1);
+  SET vServicio = (select distinct Servicio_nombre from grupo5 where Servicio_id = vServ limit 1);
+  SET vLinks = (SELECT id_servicio from servicio where nombre = vServicio limit 1);
+  SET vLinkt = (SELECT id_establecimiento_servicio from establecimiento_servicio  where id_establecimiento = vLinke and
+  id_servicio=vLinks limit 1);
+  -- SELECT vLink;
+  
+  
+  INSERT INTO comentario (contenido, calificacion, id_establecimiento_servicio ) VALUES (vComentario, vValori, vLinkt);  
+ 
+END LOOP agregar_es;
+END

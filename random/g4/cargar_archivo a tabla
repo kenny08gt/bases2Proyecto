@@ -1,0 +1,1 @@
+load data infile '/tmp/grupo.csv' into table grupo fields terminated by ',' enclosed by '"' ignore 1 lines ();

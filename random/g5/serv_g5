@@ -1,0 +1,33 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `serv_g5`()
+BEGIN
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE cServ5 CURSOR FOR select distinct Servicio_nombre from grupo5;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cServ5;
+agregar_serv: LOOP
+ FETCH cServ5 INTO vNombre;
+ IF finished = 1 THEN 
+ LEAVE agregar_serv;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ set totalCount =(select count(nombre) from servicio where nombre = vNombre);
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO servicio (nombre) VALUES (vNombre);  
+ END IF;
+
+END LOOP agregar_serv;
+END

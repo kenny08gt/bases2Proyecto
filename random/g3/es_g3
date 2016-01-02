@@ -1,0 +1,31 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `es_g3`()
+BEGIN
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEs INTEGER DEFAULT 0;
+DECLARE vSe INTEGER DEFAULT 0;
+DECLARE cEs CURSOR FOR select DISTINCT e.id_establecimiento, s.id_servicio from establecimiento e, servicio s, grupo3 g 
+where g.nombre = e.nombre and s.nombre = g.Servicio_Establecimiento;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEs;
+agregar_es: LOOP
+ FETCH cEs INTO vEs, vSe;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+  INSERT INTO establecimiento_servicio (id_establecimiento, id_servicio) VALUES (vEs, vSe);  
+ 
+END LOOP agregar_es;
+
+END

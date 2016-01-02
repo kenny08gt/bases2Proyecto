@@ -1,0 +1,42 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `serv_g3`()
+BEGIN
+
+DECLARE totalCount INTEGER DEFAULT 0;
+DECLARE Off INTEGER DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vSe varchar(255) DEFAULT "";
+DECLARE vDe varchar(255) DEFAULT "";
+DECLARE cServ CURSOR FOR select DISTINCT Servicio_Establecimiento, Descripcion from grupo3;
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cServ;
+agregar_serv: LOOP
+ FETCH cServ INTO vSe, vDe;
+ IF finished = 1 THEN 
+ LEAVE agregar_serv;
+ END IF;
+ -- build email list
+ -- SET email_list = CONCAT(v_email,";",email_list);
+ Select totalCount = count(*) From servicio where nombre=vSe;
+ IF totalCount = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+ INSERT INTO servicio (nombre, descripcion) VALUES (vSe, vDe);  
+ END IF;
+
+
+END LOOP agregar_serv;
+/*CREATE TEMPORARY TABLE TmpEst (Nombre Varchar(255), Coord varchar(255), Oficial varchar(255)); 
+INSERT INTO TmpEst SELECT DISTINCT Nombre, Coordenadas, Es_oficial FROM grupo3;
+
+
+DROP TABLE TmpEst;*/
+
+END

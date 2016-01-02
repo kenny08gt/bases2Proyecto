@@ -1,0 +1,14 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `cargar_g5`()
+BEGIN
+ call est_g5();
+ call usr_g5();
+ call serv_g5();
+ call es_g5();
+ call com_g5();
+END

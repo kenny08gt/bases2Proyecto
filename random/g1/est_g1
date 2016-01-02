@@ -1,0 +1,43 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `est_g1`()
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE vOff integer DEFAULT 0;
+DECLARE vLong float DEFAULT 0;
+DECLARE vLat float DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre1 varchar(255) DEFAULT "";
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE cEst1 CURSOR FOR  select DISTINCT Nombre1, Nombre, Latitud, Longitud, is_Oficial from grupo1;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEst1;
+agregar_es: LOOP
+ FETCH cEst1 INTO vNombre1, vNombre, vLat, vLong, vOff;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET repetido = ( select count(nombre) from establecimiento where nombre=VNombre1);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  IF vOff = 'VERDADERO' THEN
+  SET vOff = 1;
+  END IF;
+
+ IF vNombre = 'Hospedaje' THEN
+  SET vNombre = 'Hotel';
+ END IF;
+
+ INSERT INTO establecimiento (Nombre, tipo, longitud, latitud, oficial) VALUES (vNombre1,vNOmbre,vLat, vLong, vOff);  
+ END IF;
+  
+END LOOP agregar_es;
+
+END

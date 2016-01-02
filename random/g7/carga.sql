@@ -1,0 +1,1 @@
+load data infile '/home/ubuntu/workspace/random/grupo72.csv' into table grupo7 fields terminated by ',' enclosed by '"' ignore 1 lines (id_usr,id_tp_user,usuario,contrasena,id_estabto,nombre,id_tipo_est,latitud,longitud,id_tamano,id_costo);

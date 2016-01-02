@@ -1,0 +1,37 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ed_g1`()
+BEGIN
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE existe integer default 0; 
+DECLARE vCat INTEGER DEFAULT 0;
+DECLARE vDim INTEGER DEFAULT 0;
+DECLARE vEst INTEGER DEFAULT 0;
+DECLARE vCatv varchar(255) default "";
+DECLARE vDimv varchar(255) default "";
+DECLARE vEstv varchar(255) default "";
+DECLARE cEs CURSOR FOR select distinct Nombre1, Nombre5, valor1 from grupo1 where Nombre1=' ' or Nombre5 != ' ' or valor1!=' ';
+
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEs;
+agregar_es: LOOP
+ FETCH cEs INTO vEstv, vDimv, vCatv;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+ set vEst = (select id_establecimiento from establecimiento where nombre = vEstv limit 1);
+ set vDim = (select id_dimension from dimension where nombre = vDimv limit 1);
+ set existe = (select count(id_dimension) from establecimiento_dimension where id_establecimiento = vEst and id_dimension=vDim);
+ IF existe = 0 THEN
+ set vCat = (select id_categoria from categoria where nombre = vCatv limit 1);
+  INSERT INTO establecimiento_dimension (id_establecimiento, id_dimension, id_categoria) VALUES (vEst, vDim, vCat);  
+ END IF;
+END LOOP agregar_es;
+END

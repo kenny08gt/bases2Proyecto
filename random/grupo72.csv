@@ -1,0 +1,157 @@
+tipo_user,,tipo_establecimeinto,,tipo_tamaño,,tipo_costo,,tipo_habitacion,,
+id_tp_user,tipo,id_tp_estabto,tipo,id_tamaño,tipo,id_costo,tipo,id_tp_htcion,tipo,
+1,administrador n1,1,hospedaje,1,pequeño,1,economico,1,simple,
+2,administrador n2,2,restaurante,2,mediano,2,asequible,2,doble,
+3,administrador n3,3,taller,3,grande,3,costoso,3,nupcial,
+4,usuario,4,gasolinera,,,4,eejecutivo,4,premium,
+5,establecimiento,,,,,,,,,
+,,,,,,,,,,
+usuarios,,,,establecieminto,,,,,,
+id_usr,id_tp_user,usuario,contrasena,id_estabto,nombre,id_tipo,latitud,longitud,id_tamano,id_costo
+1,2,llopez,gtds,1,hogar de San Juan,1,65464.15,12354.5,1,1
+2,1,mmiranda,sdft6g7,2,Salvador Deli,2,12584.52,21895.2585,2,2
+3,1,mynor,gb55,3,hotel del bosque,1,88529.98541,5284.652,2,3
+4,1,bryayam,f446hjg,4,posada maria,1,8456.85412,632,3,4
+5,1,oswaldo,rfr56f,5,hostal funes,1,962.98542,6985,3,3
+6,2,htaracena,fg57h,6,hotel gran rivera,1,8542.9652,9856320.6,2,2
+7,3,hoswaldo,fag56,7,la buena carne,2,8412,9852.0254,2,2
+8,4,israel,sdh678,8,don rodrigo,2,859652.9852,9862.035,3,3
+9,2,vasquez,65s4dg5,9,comida san lucas,2,8423.369874,98456320.61,2,4
+10,5,vbryan,d5fd5s4d6,10,la pasadita,2,9854223.369,54120.9845,2,3
+11,4,luis,dgf85e,11,enderezado don martin,3,123.5,1585.95,3,2
+12,3,juan,dki5,12,sistema electricos mejorados,3,53.95,98620.36541,2,1
+13,2,gonzales,85sd2fg,13,ultra sensores,3,5463,25841.9852,3,3
+14,3,mario,8sdf25,14,enderezado lo d esiempre,3,8416.36984,1025685201.321,1,4
+15,4,lucia,sdfg84,15,shell mixco,4,541.65,541205410.52,3,3
+16,5,marisol,8745df,16,shell san lucas 1,4,954126.65,5123.012,1,2
+17,3,melany,sd5,17,hostal buen dormir,1,6523.365,3210.0852,2,2
+18,1,system,f8t2,18,las tres comidas,2,123333.5,8510.5201,1,3
+19,1,admin,6532,19,escapes san jorge,3,541.6,985201.6521,3,4
+20,5,daniel,ert,20,hotel del paso,1,65423.12,85420.0521,2,3
+21,3,matilda,tyes66,21,las galletas de mama,2,12354.321,1265210.32,3,2
+22,2,jazucena,4redf5,22,pintura la pintada,3,1585,126542.021,2,1
+23,3,mgarcia,dfs5,23,hotel camino real,1,325,5420.65412,3,3
+24,5,operalta,zxcv6sadt,24,mcdonalds queztaltenango,2,13574.685,1236542.1,3,4
+25,4,abigailm,4665,25,hotel huehuetenango,1,12389.396,1258789652.12,2,2
+26,3,oiu125d2,agf5,26,pollo campero zona 1,2,1212135.5,54121125.123,1,1
+27,5,carlos85,654dg,27,automotriz y repuestos CS,3,1204520.38,121021.32,3,2
+28,4,manalberto,sdf521,28,puma zona 11,4,10258756.69521,1354.651,2,4
+29,5,locastar,5dsf54,29,carnes de Argentina,2,9520.7863,121.51,3,3
+30,1,administrador,dfg54,30,texaco san juan,4,95210.62,51254.652,2,2
+,,,,,,,,,,
+servicio,,,,calificacion,,,,,,
+id_srv,tipo,id_estabto,precio,id_clf,id_estabto,calificacion,id_srv,id_usr,,
+1,enderezado,14,25,1,1,5,7,2,,
+2,cena completa,2,62,2,2,6,6,5,,
+3,almuerzo simple,7,352,3,23,4,4,12,,
+4,desayuno completo,8,32.1,4,7,1,3,8,,
+5,desayuno rapido,9,25.25,5,6,2,5,4,,
+6,desayuno economico,10,52,6,5,3,6,29,,
+7,almuerzo ejecutivo,21,85,7,6,6,5,30,,
+8,banquete,2,684,8,6,5,8,2,,
+9,bufe,7,100,9,7,4,5,1,,
+10,pintado,27,25,10,8,7,4,5,,
+11,enderezado mecanico,11,268,11,10,4,3,4,,
+12,calibracion de llantas,15,26,12,2,1,2,1,,
+13,limpiado de vidrios,16,25,13,5,1,1,2,,
+14,super,15,125.2,14,4,2,25,5,,
+15,regular,16,12.6,15,4,6,5,4,,
+16,diesel,15,12.2,16,8,5,8,1,,
+17,regular,16,451.156,17,1,4,4,3,,
+18,super,30,15.5,18,3,1,1,6,,
+19,diesel,30,55,19,3,3,2,2,,
+20,calibrado de llantas,30,52,20,4,6,5,2,,
+21,camnio de aceite,28,86,21,3,4,14,1,,
+22,camnio de llantas,14,1.36,22,5,7,3,4,,
+23,sistema electrico,13,254.36,23,8,4,6,5,,
+24,cambio de bomba de gasolina,19,84.25,24,9,5,9,2,,
+25,caja de velocidades,19,653.21,25,2,2,4,5,,
+26,servicio a la habitacion,5,36.21,26,2,1,4,22,,
+27,postre,25,521.2,27,2,3,2,25,,
+28,limpieza,25,63.5,28,5,6,5,2,,
+29,super,28,25,29,2,5,2,5,,
+30,flechas ,27,153.6,30,3,4,1,12,,
+,,,,,,,,,,
+habitacion,,,,,,,,,,
+id_htcion,nombre,id_tp_htcion,id_estabto,estado,precio,capacidad,,,,
+1,suit nupcial,1,1,1,1234.12,2,,,,
+2,suit empresarial,2,2,1,6541.6,2,,,,
+3,hi nivel 1,3,3,0,952.321,3,,,,
+4,encomendador,4,4,1,95423.32,1,,,,
+5,dole familiar,1,5,0,9854523,2,,,,
+6,personal,2,6,1,6953.02,2,,,,
+7,personal ejecutiva,3,17,0,98523,2,,,,
+8,alta vista,4,20,1,53.01,2,,,,
+9,vista lago,1,20,0,652.02,3,,,,
+10,vista bosque,2,20,1,6523,2,,,,
+11,pen house,3,23,0,623,2,,,,
+12,sala descanso,4,25,1,520,1,,,,
+13,suit matrimonial,3,23,1,12,1,,,,
+14,suit premium,4,1,0,15.25,3,,,,
+,,,,,,,,,,
+resv_habitacion,,,,,,,,,,
+id_resv_htcion,id_estabto,id_user,habitacion,fecha,hora,,,,,
+1,1,1,hi nivel 1,30/12/20015,14:00,,,,,
+2,3,2,encomendador,30/12/20015,15:00,,,,,
+3,4,23,dole familiar,30/12/20015,16:00,,,,,
+4,5,4,hi nivel 1,30/12/20015,17:00,,,,,
+5,6,4,encomendador,30/12/20015,18:00,,,,,
+6,17,5,dole familiar,30/12/20015,19:00,,,,,
+7,20,6,hi nivel 1,30/12/20015,20:00,,,,,
+8,23,7,encomendador,30/12/20015,21:00,,,,,
+9,25,7,dole familiar,30/12/20015,22:00,,,,,
+10,1,8,personal,30/12/20015,23:00,,,,,
+11,3,9,personal ejecutiva,30/12/20015,00:00,,,,,
+12,1,3,alta vista,30/12/20015,01:00,,,,,
+13,3,7,vista lago,30/1/20015,02:00,,,,,
+14,4,6,vista bosque,30/12/20015,03:00,,,,,
+15,1,12,pen house,30/12/20015,04:00,,,,,
+16,3,5,sala descanso,30/12/20015,05:00,,,,,
+17,4,6,hi nivel 1,30/12/20015,06:00,,,,,
+18,5,7,encomendador,30/12/20015,07:00,,,,,
+19,6,22,dole familiar,30/12/20015,08:00,,,,,
+20,17,8,personal,30/12/20015,09:00,,,,,
+21,20,15,personal ejecutiva,30/12/20015,10:00,,,,,
+22,23,4,alta vista,30/12/20015,11:00,,,,,
+23,25,12,vista lago,30/12/20015,12:00,,,,,
+24,17,2,vista bosque,30/12/20015,13:00,,,,,
+25,20,2,pen house,30/12/20015,14:00,,,,,
+26,23,2,sala descanso,30/12/20015,15:00,,,,,
+,,,,,,,,,,
+resv_comida,,,,,,,,,,
+id_resv_comida,id_estabto,id_user,fecha,hora,cantidad,,,,,
+1,2,23,01/12/2015,04:00,5,,,,,
+2,7,4,05/08/2015,15:30,4,,,,,
+3,8,4,08/05/2015,04:15,6,,,,,
+4,9,5,01/12/2015,04:00,3,,,,,
+5,10,6,05/08/2015,15:30,2,,,,,
+6,18,7,08/05/2015,04:15,1,,,,,
+7,21,7,01/12/2015,04:00,4,,,,,
+8,24,8,05/08/2015,15:30,5,,,,,
+9,26,9,08/05/2015,04:15,2,,,,,
+10,29,3,01/12/2015,04:00,1,,,,,
+11,2,7,05/08/2015,15:30,3,,,,,
+12,7,6,08/05/2015,04:15,2,,,,,
+13,21,12,01/12/2015,04:00,5,,,,,
+14,24,5,05/08/2015,15:30,4,,,,,
+15,26,6,08/05/2015,04:15,2,,,,,
+,,,,,,,,,,
+user_perfil,,,,,,,,,,
+id_usr,nit,nombre,edad,dpi,telefono,direccion,,,,
+1,3215645,luis lopez,12,3215400121,65432158,guatemala,,,,
+2,984215,mynor miranda,54,3215400121,65432158,guatemala,,,,
+3,8526962,mirnor lopez,25,3215400121,65432158,guatemala,,,,
+4,541365,bryam,24,3215400121,65432158,guatemala,,,,
+5,58215,oswaldo,30,3215400121,65432158,guatemala,,,,
+6,6225,htaracena,36,3215400121,65432158,guatemala,,,,
+7,85228,hoswaldo,19,3215400121,65432158,guatemala,,,,
+8,551384,israel,52,3215400121,65432158,guatemala,,,,
+9,1214,vasquez,65,3215400121,65432158,guatemala,,,,
+10,541,vbryan,28,3215400121,65432158,guatemala,,,,
+11,58552,luis,21,3215400121,65432158,guatemala,,,,
+12,58514,juan,26,3215400121,65432158,guatemala,,,,
+13,841245,gonzales,36,3215400121,65432158,guatemala,,,,
+14,2542852,mario,30,3215400121,65432158,guatemala,,,,
+15,8541111,lucia,21,3215400121,65432158,guatemala,,,,
+16,5561258,marisol,52,3215400121,65432158,guatemala,,,,
+17,55221,melany,23,3215400121,65432158,guatemala,,,,

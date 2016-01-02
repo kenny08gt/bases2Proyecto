@@ -1,0 +1,55 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `usr_g1`()
+BEGIN
+DECLARE estab Integer default 0;
+DECLARE vNrol varchar(255) default "";
+DECLARE repetido INTEGER default 0;
+DECLARE vPass varchar(255) DEFAULT " ";
+DECLARE vNombre1 varchar(255) DEFAULT "";
+DECLARE vRol integer DEFAULT 0;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vNombre3 varchar(255) DEFAULT "";
+DECLARE vEmail varchar(255) DEFAULT "";
+DECLARE cUsr1 CURSOR FOR SELECT distinct  Nombre3, Email, id_rol, Nombre1, Pass from grupo1;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cUsr1;
+agregar_es: LOOP
+ FETCH cUsr1 INTO vNombre3, vEmail, vRol, vNombre1, vPass;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET repetido = ( select count(nombre) from usuario where nombre=VNombre3);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  IF vRol != 0 THEN
+
+  
+
+  SET estab = ( SELECT id_establecimiento from establecimiento where nombre = vNombre1 LIMIT 1);
+  IF vRol = 1 then
+   SET vNrol = 'normal';
+  END IF;
+
+  IF vRol = 2 then
+  SET vNrol = 'especial';  
+  END IF;
+
+  IF vRol = 3 then  
+  SET vNrol = 'administrador';
+   END IF;
+
+ INSERT INTO usuario (nombre, correo, rol, id_establecimiento, password) VALUES (vNombre3,vEmail,vNrol, estab, vPass);  
+ END IF;
+END IF;
+  
+END LOOP agregar_es;
+
+END

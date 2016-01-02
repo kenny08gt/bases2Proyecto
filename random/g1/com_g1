@@ -1,0 +1,66 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `com_g1`()
+BEGIN
+DECLARE vLinke INTEGER DEFAULT 0;
+DECLARE vLinks INTEGER DEFAULT 0;
+DECLARE vLinkt INTEGER DEFAULT 0;
+DECLARE vEstablecimiento varchar(255) DEFAULT "";
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vComentario varchar(255) DEFAULT "";
+DECLARE vValor varchar(255) DEFAULT "";
+DECLARE vValori integer default 0;
+DECLARE cCom1 CURSOR FOR  select distinct Valor1, Comentario, Nombre1, Nombre2 from grupo1 where id_Categoria = 1 and comentario !=' ';
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cCom1;
+agregar_es: LOOP
+ FETCH cCom1 INTO vValor, vComentario, vEstablecimiento, VServicio;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+ IF vValor = '1 esferas' then
+ set vValori = 1;
+ End if;
+
+ IF vValor = '2 esferas' then
+ set vValori = 2;
+ End if;
+
+ IF vValor = '3 esferas' then
+ set vValori = 3;
+ End if;
+
+ IF vValor = '4 esferas' then
+ set vValori = 4;
+ End if;
+
+ IF vValor = '5 esferas' then
+ set vValori = 5;
+ End if;
+
+ IF vValor = '6 esferas' then
+ set vValori = 6;
+ End if;
+
+ IF vValor = '7 esferas' then
+ set vValori = 7;
+ End if;
+
+  SET vLinke = (SELECT id_establecimiento from establecimiento where nombre = vEstablecimiento limit 1);
+  SET vLinks = (SELECT id_servicio from servicio where nombre = vServicio limit 1);
+  SET vLinkt = (SELECT id_establecimiento_servicio from establecimiento_servicio  where id_establecimiento = vLinke and
+  id_servicio=vLinks limit 1);
+  -- SELECT vLink;
+  
+  
+  INSERT INTO comentario (contenido, calificacion, id_establecimiento_servicio ) VALUES (vComentario, vValori, vLinkt);  
+ 
+END LOOP agregar_es;
+END

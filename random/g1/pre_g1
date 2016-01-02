@@ -1,0 +1,38 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `pre_g1`()
+BEGIN
+DECLARE vLinke INTEGER DEFAULT 0;
+DECLARE vLinks INTEGER DEFAULT 0;
+DECLARE vLinkt INTEGER DEFAULT 0;
+DECLARE vServicio varchar(255) DEFAULT "";
+DECLARE vFecha date;
+DECLARE vHora time;
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vEstablecimiento varchar(255) DEFAULT "";
+DECLARE cPre1 CURSOR FOR  select distinct Fecha, Hora_Check_In,  Nombre1, Nombre2  from grupo1 where Nombre2 != ' ' and Hora_Check_In != 0;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cPre1;
+agregar_es: LOOP
+ FETCH cPre1 INTO vFecha, vHora, vEstablecimiento, VServicio;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+
+  SET vLinke = (SELECT id_establecimiento from establecimiento where nombre = vEstablecimiento limit 1);
+  SET vLinks = (SELECT id_servicio from servicio where nombre = vServicio limit 1);
+  SET vLinkt = (SELECT id_establecimiento_servicio from establecimiento_servicio  where id_establecimiento = vLinke and
+  id_servicio=vLinks limit 1);
+  -- SELECT vLink;
+  
+  
+  INSERT INTO prereserva (horayfecha, id_establecimiento_servicio ) VALUES (concat(vFecha, ' ', vHora), vLinkt);  
+ 
+END LOOP agregar_es;
+END

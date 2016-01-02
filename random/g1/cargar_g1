@@ -1,0 +1,16 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `cargar_g1`()
+BEGIN
+call est_g1();
+call usr_g1();
+call cat_g1();
+call dim_g1();
+call serv_g1();
+call com_g1();
+call pre_g1();
+END

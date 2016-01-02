@@ -1,0 +1,32 @@
+LOAD DATA LOCAL INFILE '/home/ubuntu/workspace/random/Grupo5.csv' 
+INTO TABLE grupo5 
+FIELDS TERMINATED BY ';' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+
+LOAD DATA LOCAL INFILE '/home/ubuntu/workspace/random/Grupo1v2.csv' 
+INTO TABLE grupo1 
+FIELDS TERMINATED BY ';' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+SET Fecha = STR_TO_DATE(@Fecha, '%m/%d/%Y');
+
+
+LOAD DATA LOCAL INFILE '/home/ubuntu/workspace/random/Grupo3.csv' 
+INTO TABLE grupo3 
+FIELDS TERMINATED BY ';' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+ mysql -h localhost -u root -p bases --local-infile
+
+mysql -h localhost -u ingeusac -p bases2 --local-infile
+
+Nivel por tabla
+select  TABLE_NAME AS TABLA, DATA_LENGTH, DATA_FREE, ((DATA_LENGTH / DATA_FREE)*100) as FRAGMENTACION,TABLE_ROWS as PAGINACION, TABLE_COLLATION AS COLLATION
+from information_schema.tables where table_schema 
+not in ('information_schema', 'mysql') and data_free > 0;

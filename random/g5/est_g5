@@ -1,0 +1,47 @@
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `est_g5`()
+BEGIN
+DECLARE repetido INTEGER default 0;
+DECLARE vId integer DEFAULT 0;
+DECLARE vNombre varchar(255) DEFAULT "";
+DECLARE vLong varchar(255) DEFAULT "";
+DECLARE vLat varchar(255) DEFAULT "";
+DECLARE finished INTEGER DEFAULT 0;
+DECLARE vTipo varchar(255) DEFAULT "";
+DECLARE vOff varchar(255) DEFAULT "";
+DECLARE vOffi integer default 0;
+DECLARE cEst5 CURSOR FOR select distinct Establecimiento_id from grupo5;
+DECLARE CONTINUE HANDLER 
+FOR NOT FOUND SET finished = 1;
+
+OPEN cEst5;
+agregar_es: LOOP
+ FETCH cEst5 INTO vId;
+ IF finished = 1 THEN 
+ LEAVE agregar_es;
+ END IF;
+	SET vNombre =(select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Nombre');
+  SET repetido = ( select count(nombre) from establecimiento where nombre=vNombre);
+ IF repetido = 0 then
+ -- EL VALOR NO EXISTE, ENTONCES INGRESA
+  SET vLong =(select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Longitud');
+  SET vLat = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Latitud');
+  SET vTipo = (select distinct TipoEstablecimiento_nombre from  grupo5 where Establecimiento_id = vId);
+  SET vOff = (select distinct Valor_valor from  grupo5 where Establecimiento_id = vId and Atributo_nombre='Oficial');
+  SET vOffi = CAST(vOff as unsigned);
+  IF vOffi > 0 then
+   SET vOffi = 1;
+ END IF;
+ IF vOffi = 0 then
+ set vOffi = 0;
+ END IF;
+  INSERT INTO establecimiento (nombre, tipo, longitud, latitud, oficial) VALUES (vNombre,vTipo,CAST(vLat as DECIMAL(6,6)), CAST(vLong as DECIMAL(6,6)), vOffi);  
+ END IF;
+  
+END LOOP agregar_es;
+END
